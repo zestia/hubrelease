@@ -4,9 +4,7 @@ STDOUT.sync = true
 $:.unshift File.join(File.dirname(__FILE__), "..", "lib")
 
 require "optparse"
-require "octokit"
-
-CLOSE_REGEX = /(((close|resolve)(s|d)?)|fix(e(s|d))?) #(\d+)/i
+require "hubrelease"
 
 options = {}
 opts = OptionParser.new do |o|
@@ -46,60 +44,8 @@ begin
   end
 rescue OptionParser::InvalidOption, OptionParser::MissingArgument
   puts $!.to_s
-  puts optparse
+  puts opts
   exit
 end
 
-token    = options[:token]
-nwo      = options[:repo]
-base_tag = options[:base]
-head_tag = options[:head]
-
-client = Octokit::Client.new access_token: token
-
-base = client.ref nwo, "tags/#{base_tag}"
-base_ref = client.get base.object.url
-
-head = client.ref nwo, "tags/#{head_tag}"
-head_ref = client.get head.object.url
-
-issues = client.issues nwo, state: "closed", since: base_ref.tagger.date.iso8601
-issues = issues.select { |i| i.closed_at <= head_ref.tagger.date }
-
-compare = client.compare nwo, base_tag, head_tag
-
-include_issues = compare.commits.map do |commit|
-  if match = CLOSE_REGEX.match(commit.commit.message)
-    match[7].to_i
-  end
-end.compact.uniq
-
-exclude_issues = issues.map do |issue|
-  if issue.pull_request
-    if match = CLOSE_REGEX.match(issue.body)
-      match[7].to_i
-    end
-  end
-end.compact.uniq
-
-issues = issues.select do |issue|
-  !exclude_issues.include?(issue.number)
-end
-
-issues = issues.select do |issue|
-  include_issues.include?(issue.number) || issue.pull_request
-end
-
-body = issues.map { |i| "[#{i.number}](#{i.html_url}) - #{i.title}" }
-
-begin
-  release = client.release_for_tag nwo, head_tag
-  raise Octokit::NotFound if release.id.nil?
-  puts "Updating release #{head_tag}..."
-  client.update_release release.url, body: body.join("\n")
-  puts release.html_url
-rescue Octokit::NotFound
-  puts "Creating release #{head_tag}..."
-  release = client.create_release nwo, head_tag, name: head_tag, body: body.join("\n")
-  puts release.html_url
-end
+HubRelease::Generator.new(options).generate
