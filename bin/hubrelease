@@ -1,2 +1,105 @@
 #!/usr/bin/env ruby
 STDOUT.sync = true
+
+$:.unshift File.join(File.dirname(__FILE__), "..", "lib")
+
+require "optparse"
+require "octokit"
+
+CLOSE_REGEX = /(((close|resolve)(s|d)?)|fix(e(s|d))?) #(\d+)/i
+
+options = {}
+opts = OptionParser.new do |o|
+  o.banner = "Usage: hubrelease [options]"
+
+  o.on "--repo USER/REPO", "Repository (user/repo)" do |repo|
+    options[:repo] = repo
+  end
+
+  o.on "--base BASE", "Base tag name" do |base|
+    options[:base] = base
+  end
+
+  o.on "--head HEAD", "Head tag name" do |head|
+    options[:head] = head
+  end
+
+  o.on "--token TOKEN", "GitHub API token" do |token|
+    options[:token] = token
+  end
+
+  o.on_tail "-h", "--help", "Show this message" do
+    puts o
+    exit
+  end
+end
+
+begin
+  opts.parse!
+  mandatory = [:repo, :base, :head, :token]
+  missing = mandatory.select{ |param| options[param].nil? }
+
+  unless missing.empty?
+    puts "Missing options: #{missing.join(', ')}"
+    puts opts
+    exit
+  end
+rescue OptionParser::InvalidOption, OptionParser::MissingArgument
+  puts $!.to_s
+  puts optparse
+  exit
+end
+
+token    = options[:token]
+nwo      = options[:repo]
+base_tag = options[:base]
+head_tag = options[:head]
+
+client = Octokit::Client.new access_token: token
+
+base = client.ref nwo, "tags/#{base_tag}"
+base_ref = client.tag nwo, base.object.sha
+
+head = client.ref nwo, "tags/#{head_tag}"
+head_ref = client.tag nwo, head.object.sha
+
+issues = client.issues nwo, state: "closed", since: base_ref.tagger.date.iso8601
+issues = issues.select { |i| i.closed_at <= head_ref.tagger.date }
+
+compare = client.compare nwo, base_tag, head_tag
+
+include_issues = compare.commits.map do |commit|
+  if match = CLOSE_REGEX.match(commit.commit.message)
+    match[7].to_i
+  end
+end.compact.uniq
+
+exclude_issues = issues.map do |issue|
+  if issue.pull_request
+    if match = CLOSE_REGEX.match(issue.body)
+      match[7].to_i
+    end
+  end
+end.compact.uniq
+
+issues = issues.select do |issue|
+  !exclude_issues.include?(issue.number)
+end
+
+issues = issues.select do |issue|
+  include_issues.include?(issue.number) || issue.pull_request
+end
+
+body = issues.map { |i| "[#{i.number}](#{i.html_url}) - #{i.title}" }
+
+begin
+  release = client.release_for_tag nwo, head_tag
+  raise Octokit::NotFound if release.id.nil?
+  puts "Updating release #{head_tag}..."
+  client.update_release release.url, body: body.join("\n")
+  puts release.html_url
+rescue Octokit::NotFound
+  puts "Creating release #{head_tag}..."
+  release = client.create_release nwo, head_tag, name: head_tag, body: body.join("\n")
+  puts release.html_url
+end
