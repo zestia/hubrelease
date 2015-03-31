@@ -14,12 +14,12 @@ opts = OptionParser.new do |o|
     options[:repo] = repo
   end
 
-  o.on "--base BASE", "Base tag name" do |base|
-    options[:base] = base
+  o.on "--prev PREVIOUS", "Previous release tag name" do |p|
+    options[:prev] = p
   end
 
-  o.on "--head HEAD", "Head tag name" do |head|
-    options[:head] = head
+  o.on "--new NEW", "Next release tag name" do |n|
+    options[:new] = n
   end
 
   o.on "--token TOKEN", "GitHub API token" do |token|
@@ -34,7 +34,7 @@ end
 
 begin
   opts.parse!
-  mandatory = [:repo, :base, :head, :token]
+  mandatory = [:repo, :prev, :new, :token]
   missing = mandatory.select{ |param| options[param].nil? }
 
   unless missing.empty?

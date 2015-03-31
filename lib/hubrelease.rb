@@ -7,8 +7,8 @@ module HubRelease
     def initialize(options)
       @client = Octokit::Client.new access_token: options[:token]
       @repo = options[:repo]
-      @base_tag = options[:base]
-      @head_tag = options[:head]
+      @base_tag = options[:prev]
+      @head_tag = options[:new]
     end
 
     def generate
