@@ -58,10 +58,10 @@ head_tag = options[:head]
 client = Octokit::Client.new access_token: token
 
 base = client.ref nwo, "tags/#{base_tag}"
-base_ref = client.tag nwo, base.object.sha
+base_ref = client.get base.object.url
 
 head = client.ref nwo, "tags/#{head_tag}"
-head_ref = client.tag nwo, head.object.sha
+head_ref = client.get head.object.url
 
 issues = client.issues nwo, state: "closed", since: base_ref.tagger.date.iso8601
 issues = issues.select { |i| i.closed_at <= head_ref.tagger.date }
