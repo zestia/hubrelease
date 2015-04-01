@@ -18,6 +18,7 @@ module HubRelease
       issues = fetch_issues(base_ref.tagger.date, head_ref.tagger.date)
 
       issues = exclude_closed_by_pull_request(issues)
+      issues = exclude_non_merged_pull_requests(issues)
       issues = include_closed_by_commit(issues)
 
       body = generate_release_body(issues)
@@ -49,6 +50,22 @@ module HubRelease
         if issue.pull_request
           if match = CLOSE_REGEX.match(issue.body)
             match[7].to_i
+          end
+        end
+      end.compact.uniq
+
+      issues.select do |issue|
+        !exclude_ids.include?(issue.number)
+      end
+    end
+
+    def exclude_non_merged_pull_requests(issues)
+      exclude_ids = issues.map do |issue|
+        if issue.pull_request
+          pr = @client.get issue.pull_request.url
+
+          unless pr.merged_at
+            issue.number
           end
         end
       end.compact.uniq
