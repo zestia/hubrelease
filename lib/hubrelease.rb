@@ -15,7 +15,10 @@ module HubRelease
       base_ref = fetch_base_tag
       head_ref = fetch_head_tag
 
-      issues = fetch_issues(base_ref.tagger.date, head_ref.tagger.date)
+      base_date = (base_ref.tagger ? base_ref.tagger.date : base_ref.author.date)
+      head_date = (head_ref.tagger ? head_ref.tagger.date : head_ref.author.date)
+
+      issues = fetch_issues(base_date, head_date)
 
       issues = exclude_closed_by_pull_request(issues)
       issues = exclude_non_merged_pull_requests(issues)
