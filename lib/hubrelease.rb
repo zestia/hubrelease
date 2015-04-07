@@ -99,7 +99,7 @@ module HubRelease
 
     def generate_release_body(issues)
       issues.map do |issue|
-        "[#{issue.number}](#{issue.html_url}) - #{issue.title}"
+        "[##{issue.number}](#{issue.html_url}) - #{issue.title}"
       end.join("\n")
     end
 
