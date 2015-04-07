@@ -9,6 +9,7 @@ module HubRelease
       @repo = options[:repo]
       @base_tag = options[:prev]
       @head_tag = options[:new]
+      @output = options[:output]
     end
 
     def generate
@@ -26,7 +27,11 @@ module HubRelease
 
       body = generate_release_body(issues)
 
-      create_or_update_release(body)
+      if @output
+        puts body
+      else
+        create_or_update_release(body)
+      end
     end
 
     def fetch_base_tag
