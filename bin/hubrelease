@@ -14,6 +14,10 @@ opts = OptionParser.new do |o|
     options[:repo] = repo
   end
 
+  o.on "--init", "Generate first release" do |init|
+    options[:init] = init
+  end
+
   o.on "--output", "Print release notes to stdout, don't create a GitHub release" do |output|
     options[:output] = output
   end
@@ -38,7 +42,13 @@ end
 
 begin
   opts.parse!
-  mandatory = [:repo, :prev, :new, :token]
+
+  if options[:init]
+    mandatory = [:repo, :token, :new]
+  else
+    mandatory = [:repo, :prev, :new, :token]
+  end
+
   missing = mandatory.select{ |param| options[param].nil? }
 
   unless missing.empty?
@@ -52,4 +62,4 @@ rescue OptionParser::InvalidOption, OptionParser::MissingArgument
   exit
 end
 
-HubRelease::Generator.new(options).generate
+HubRelease::Generator.generate(options)
