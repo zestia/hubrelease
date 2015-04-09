@@ -5,7 +5,7 @@ module HubRelease
     end
 
     def self.create_or_update(tag, issues)
-      release = HubRelease.client(HubRelease.repo, tag)
+      release = HubRelease.client.release_for_tag(HubRelease.repo, tag)
       raise Octokit::NotFound if release.id.nil?
       update(release, tag, generate_body(issues))
     rescue Octokit::NotFound
