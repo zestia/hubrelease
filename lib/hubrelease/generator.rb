@@ -30,7 +30,7 @@ module HubRelease
       end
 
       def generate_new
-        since = since_date(@base_tag)
+        since = since_date(@base_tag) - 86_400
         current = before_date(@head_tag)
 
         issues = HubRelease::Issues.fetch(since)
