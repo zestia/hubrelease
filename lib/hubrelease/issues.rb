@@ -1,6 +1,7 @@
 module HubRelease
   module Issues
     CLOSE_REGEX = /(((close|resolve)(s|d)?)|fix(e(s|d))?) #(\d+)/i
+    MERGE_REGEX = /merge pull request #(\d+)/i
 
     def self.fetch(since = nil)
       params = { state: "closed" }
@@ -48,6 +49,23 @@ module HubRelease
       end.compact.uniq
 
       issues.select { |i| ids.include?(i.number) || i.pull_request }
+    end
+
+    def self.filter_merged_pull_requests_after_tag(issues, base, head)
+      compare = HubRelease.client.compare(HubRelease.repo, base, head)
+
+      ids = []
+      issue_nums = issues.map { |i| i.number }
+
+      compare.commits.each do |c|
+        if match = MERGE_REGEX.match(c.commit.message)
+          if issue_nums.include?(match[1].to_i)
+            ids << match[1].to_i
+            end
+        end
+      end
+
+      issues.select { |i| ids.include?(i.number) }
     end
   end
 end
