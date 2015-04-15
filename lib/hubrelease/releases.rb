@@ -31,7 +31,7 @@ module HubRelease
 
     def self.update(release, tag, body)
       puts "Updating release #{tag}..."
-       HubRelease.client.update_release(release.url, tag, {
+       HubRelease.client.update_release(release.url, {
         name: tag,
         body: body,
       })
