@@ -65,6 +65,7 @@ module HubRelease
         issues = HubRelease::Issues.filter_closed_by_pull_request(issues)
         issues = HubRelease::Issues.filter_non_merged_pull_requests(issues)
         issues = HubRelease::Issues.filter_non_commit_closed(issues, @base_tag || "master", @head_tag)
+        issues = HubRelease::Issues.filter_merged_pull_requests_after_tag(issues, @base_tag || "master", @head_tag)
       end
     end
   end
