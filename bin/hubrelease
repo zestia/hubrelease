@@ -30,6 +30,10 @@ opts = OptionParser.new do |o|
     options[:new] = new
   end
 
+  o.on "--reverts", "Include revert commits in the release notes" do |reverts|
+    options[:reverts] = reverts
+  end
+
   o.on "--token TOKEN", "GitHub API token" do |token|
     options[:token] = token
   end

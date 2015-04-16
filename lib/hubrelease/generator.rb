@@ -8,6 +8,7 @@ module HubRelease
         @output = options[:output]
         @base_tag = options[:prev]
         @head_tag = options[:new]
+        @reverts = options[:reverts]
 
         if options[:init]
           generate_first
@@ -22,10 +23,16 @@ module HubRelease
         issues = HubRelease::Issues.fetch
         issues = filter_issues(issues, current)
 
-        if @output
-          HubRelease::Releases.output(issues)
+        if @reverts
+          reverts = HubRelease::Issues.reverted_commits(@base_tag, @head_tag)
         else
-          HubRelease::Releases.create_or_update(@head_tag, issues)
+          reverts = []
+        end
+
+        if @output
+          HubRelease::Releases.output(issues, reverts)
+        else
+          HubRelease::Releases.create_or_update(@head_tag, issues, reverts)
         end
       end
 
@@ -36,10 +43,16 @@ module HubRelease
         issues = HubRelease::Issues.fetch(since)
         issues = filter_issues(issues, current)
 
-        if @output
-          HubRelease::Releases.output(issues)
+        if @reverts
+          reverts = HubRelease::Issues.reverted_commits(@base_tag, @head_tag)
         else
-          HubRelease::Releases.create_or_update(@head_tag, issues)
+          reverts = []
+        end
+
+        if @output
+          HubRelease::Releases.output(issues, reverts)
+        else
+          HubRelease::Releases.create_or_update(@head_tag, issues, reverts)
         end
       end
 

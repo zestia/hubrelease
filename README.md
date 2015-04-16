@@ -20,6 +20,7 @@ determine how to find the closed issues and pull requests.
 
 - `--repo` the repo in the format `username/project`
 - `--prev` the previous release tag name (must exist on GitHub)
+- `--reverts` include revert commits in the release notes
 - `—init` create the first release for the repo
 - `--new` the new release tag name (must exist on GitHub)
 - `--token` your GitHub API token, which you can generate in [your settings page on GitHub](https://github.com/settings/applications).

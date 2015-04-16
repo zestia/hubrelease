@@ -2,6 +2,7 @@ module HubRelease
   module Issues
     CLOSE_REGEX = /(((close|resolve)(s|d)?)|fix(e(s|d))?) #(\d+)/i
     MERGE_REGEX = /merge pull request #(\d+)/i
+    REVERT_REGEX = /^Revert/i
 
     def self.fetch(since = nil)
       params = { state: "closed" }
@@ -40,9 +41,9 @@ module HubRelease
     end
 
     def self.filter_non_commit_closed(issues, base, head)
-      compare = HubRelease.client.compare(HubRelease.repo, base, head)
+      @compare ||= HubRelease.client.compare(HubRelease.repo, base, head)
 
-      ids = compare.commits.map do |c|
+      ids = @compare.commits.map do |c|
         if match = CLOSE_REGEX.match(c.commit.message)
           match[7].to_i
         end
@@ -52,7 +53,7 @@ module HubRelease
     end
 
     def self.filter_merged_pull_requests_after_tag(issues, base, head)
-      compare = HubRelease.client.compare(HubRelease.repo, base, head)
+      @compare ||= HubRelease.client.compare(HubRelease.repo, base, head)
 
       ids = []
 
@@ -62,7 +63,7 @@ module HubRelease
         end
       end.compact.uniq
 
-      compare.commits.each do |c|
+      @compare.commits.each do |c|
         if match = MERGE_REGEX.match(c.commit.message)
           if pr_nums.include?(match[1].to_i)
             ids << match[1].to_i
@@ -73,6 +74,18 @@ module HubRelease
       exclude = pr_nums - ids
 
       issues.select { |i| !exclude.include?(i.number) }
+    end
+
+    def self.reverted_commits(base, head)
+      @compare ||= HubRelease.client.compare(HubRelease.repo, base, head)
+
+      reverts = @compare.commits.map do |c|
+        if match = REVERT_REGEX.match(c.commit.message)
+          c.commit.message
+        end
+      end.compact.uniq
+
+      reverts
     end
   end
 end
