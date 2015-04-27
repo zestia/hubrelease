@@ -38,6 +38,10 @@ opts = OptionParser.new do |o|
     options[:token] = token
   end
 
+  o.on "--labels LABELS", "Comma separated list of labels to include on items" do |labels|
+    options[:labels] = labels
+  end
+
   o.on_tail "-h", "--help", "Show this message" do
     puts o
     exit

@@ -1,22 +1,34 @@
 module HubRelease
   module Releases
-    def self.output(issues, reverts)
-      puts generate_body(issues, reverts)
+    def self.output(issues, reverts, labels)
+      puts generate_body(issues, reverts, labels)
     end
 
-    def self.create_or_update(tag, issues, reverts)
+    def self.create_or_update(tag, issues, reverts, labels)
       release = HubRelease.client.release_for_tag(HubRelease.repo, tag)
       raise Octokit::NotFound if release.id.nil?
-      update(release, tag, generate_body(issues, reverts))
+      update(release, tag, generate_body(issues, reverts, labels))
     rescue Octokit::NotFound
-      create(tag, generate_body(issues, reverts))
+      create(tag, generate_body(issues, reverts, labels))
     end
 
-    def self.generate_body(issues, reverts)
+    def self.generate_body(issues, reverts, labels)
       return "New Release" if issues.empty? and reverts.empty?
 
       body = issues.map do |i|
-        "* [##{i.number}](#{i.html_url}) - #{i.title}"
+        str = "* [##{i.number}](#{i.html_url}) - #{i.title}"
+
+        unless labels.empty?
+          labels_to_inc = i.labels.map do |l|
+            if labels.include?(l.name)
+              "_#{l.name}_"
+            end
+          end.compact.uniq!
+
+          str += " (#{labels.join(", ")})"
+        end
+
+        str
       end.join("\n")
 
       body += reverts.map do |r|
