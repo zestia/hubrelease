@@ -23,7 +23,10 @@ determine how to find the closed issues and pull requests.
 - `--reverts` include revert commits in the release notes
 - `—init` create the first release for the repo
 - `--new` the new release tag name (must exist on GitHub)
-- `--token` your GitHub API token, which you can generate in [your settings page on GitHub](https://github.com/settings/applications).
+- `--token` your GitHub API token, which you can generate in [your settings page
+  on GitHub](https://github.com/settings/applications).
+- `--labels` a comma separated list (`--labels wontfix,question,enhancement`) to
+  add to items
 
 You can either generate your very first release, or create a new release from a
 previous tag and the new release.
