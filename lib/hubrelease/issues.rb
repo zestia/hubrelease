@@ -10,6 +10,10 @@ module HubRelease
       HubRelease.client.issues(HubRelease.repo, params)
     end
 
+    def self.filter_closed_before(issues, date)
+      issues.select { |i| i.closed_at >= date }
+    end
+
     def self.filter_closed_after(issues, date)
       issues.select { |i| i.closed_at <= date }
     end

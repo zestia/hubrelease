@@ -23,7 +23,7 @@ module HubRelease
         current = before_date(@head_tag)
 
         issues = HubRelease::Issues.fetch
-        issues = filter_issues(issues, current)
+        issues = filter_issues(issues, nil, current)
 
         if @reverts
           reverts = HubRelease::Issues.reverted_commits(@base_tag, @head_tag)
@@ -43,7 +43,7 @@ module HubRelease
         current = before_date(@head_tag)
 
         issues = HubRelease::Issues.fetch(since)
-        issues = filter_issues(issues, current)
+        issues = filter_issues(issues, since, current)
 
         if @reverts
           reverts = HubRelease::Issues.reverted_commits(@base_tag, @head_tag)
@@ -75,7 +75,8 @@ module HubRelease
         abort "Could not fetch tag reference #{tag}"
       end
 
-      def filter_issues(issues, current)
+      def filter_issues(issues, since, current)
+        issues = HubRelease::Issues.filter_closed_before(issues, since) unless since.nil?
         issues = HubRelease::Issues.filter_closed_after(issues, current)
         issues = HubRelease::Issues.filter_closed_by_pull_request(issues)
         issues = HubRelease::Issues.filter_non_merged_pull_requests(issues)
