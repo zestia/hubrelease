@@ -23,9 +23,9 @@ module HubRelease
             if labels.include?(l.name)
               "_#{l.name}_"
             end
-          end.compact.uniq!
+          end
 
-          str += " (#{labels.join(", ")})"
+          str += " (#{labels_to_inc.join(", ")})" if labels_to_inc
         end
 
         str
