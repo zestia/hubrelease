@@ -31,6 +31,7 @@ module HubRelease
         str
       end.join("\n")
 
+      body += "\n" if reverts.size > 0
       body += reverts.map do |r|
         "* #{r.split("\n")[0]}"
       end.join("\n")
