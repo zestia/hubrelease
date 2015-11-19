@@ -12,6 +12,12 @@ module HubRelease
 
         @labels = (options[:labels] || "").split(",")
 
+        @attachments = []
+
+        if options[:attach]
+          @attachments << options[:attach]
+        end
+
         if options[:init]
           generate_first
         else
@@ -34,7 +40,7 @@ module HubRelease
         if @output
           HubRelease::Releases.output(issues, reverts, @labels)
         else
-          HubRelease::Releases.create_or_update(@head_tag, issues, reverts, @labels)
+          HubRelease::Releases.create_or_update(@head_tag, issues, reverts, @labels, @attachments)
         end
       end
 
@@ -54,7 +60,7 @@ module HubRelease
         if @output
           HubRelease::Releases.output(issues, reverts, @labels)
         else
-          HubRelease::Releases.create_or_update(@head_tag, issues, reverts, @labels)
+          HubRelease::Releases.create_or_update(@head_tag, issues, reverts, @labels, @attachments)
         end
       end
 
