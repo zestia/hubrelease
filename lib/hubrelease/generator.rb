@@ -12,11 +12,8 @@ module HubRelease
 
         @labels = (options[:labels] || "").split(",")
 
-        @attachments = []
+        @attachments = options[:attach] || []
 
-        if options[:attach]
-          @attachments << options[:attach]
-        end
 
         if options[:init]
           generate_first

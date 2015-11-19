@@ -49,7 +49,11 @@ module HubRelease
 
       if attachments.size > 0
         attachments.each do |a|
-          HubRelease.client.upload_asset(release.url, a)
+          begin
+            HubRelease.client.upload_asset(release.url, a)
+          rescue Octokit::MissingContentType
+            HubRelease.client.upload_asset(release.url, a, :content_type => "application/octet-stream")
+          end
         end
       end
     end
@@ -64,7 +68,11 @@ module HubRelease
 
       if attachments.size > 0
         attachments.each do |a|
-          HubRelease.client.upload_asset(release.url, a)
+          begin
+            HubRelease.client.upload_asset(release.url, a)
+          rescue Octokit::MissingContentType
+            HubRelease.client.upload_asset(release.url, a, :content_type => "application/octet-stream")
+          end
         end
       end
     end

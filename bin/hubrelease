@@ -43,7 +43,8 @@ opts = OptionParser.new do |o|
   end
 
   o.on "--attach FILE", "File path to attach to release" do |attach|
-    options[:attach] = attach
+    options[:attach] ||= []
+    options[:attach] << attach
   end
 
   o.on_tail "-h", "--help", "Show this message" do
