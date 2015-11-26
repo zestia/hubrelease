@@ -10,7 +10,7 @@ module HubRelease
         @head_tag = options[:new]
         @reverts = options[:reverts]
 
-        @labels = (options[:labels] || "").split(",")
+        @labels = options[:labels] || []
 
         @attachments = options[:attach] || []
 

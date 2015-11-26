@@ -38,8 +38,9 @@ opts = OptionParser.new do |o|
     options[:token] = token
   end
 
-  o.on "--labels LABELS", "Comma separated list of labels to include on items" do |labels|
-    options[:labels] = labels
+  o.on "--label LABEL", "Label to include on issues/pull requests labelled with the label" do |label|
+    options[:labels] ||= []
+    options[:labels] = label
   end
 
   o.on "--attach FILE", "File path to attach to release" do |attach|
