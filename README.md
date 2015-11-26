@@ -13,9 +13,6 @@ Simple install the gem:
 
 ## Usage
 
-**Note** currently `hubrelease` requires a previous tag to have been pushed to
-determine how to find the closed issues and pull requests.
-
 **Arguments:**
 
 - `--repo` the repo in the format `username/project`
