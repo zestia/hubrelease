@@ -39,7 +39,7 @@ Closed issues and pull requests are included in the release notes.
 This will generate the very first release for a repository, you simply skip the
 `--prev` option and specify `--init` instead:
 
-    hubrelease --repo zestia/hubrelease --new v0.0.1 --init --token $GITHUB_API_TOKEN
+    hubrelease --repo zestia/hubrelease --init --new v0.0.1 --token $GITHUB_API_TOKEN
 
 ### Generate New Release
 
