@@ -14,7 +14,6 @@ module HubRelease
 
         @attachments = options[:attach] || []
 
-
         if options[:init]
           generate_first
         else
