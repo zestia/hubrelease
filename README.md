@@ -1,7 +1,7 @@
 # hubrelease
 
-Generate release notes from closed issues and merged pull requests, and create a
-new release on GitHub.
+Generate release notes from closed issues and merged pull requests, then create
+a new release on GitHub.
 
 ![Release Notes Example](docs/screenshot.png)
 
