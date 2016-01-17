@@ -9,6 +9,7 @@ module HubRelease
         @base_tag = options[:prev]
         @head_tag = options[:new]
         @reverts = options[:reverts]
+        @prerelease = options[:prerelease] || false
 
         @labels = options[:labels] || []
 
@@ -36,7 +37,7 @@ module HubRelease
         if @output
           HubRelease::Releases.output(issues, reverts, @labels)
         else
-          HubRelease::Releases.create_or_update(@head_tag, issues, reverts, @labels, @attachments)
+          HubRelease::Releases.create_or_update(@head_tag, issues, reverts, @labels, @attachments, @prerelease)
         end
       end
 
@@ -56,7 +57,7 @@ module HubRelease
         if @output
           HubRelease::Releases.output(issues, reverts, @labels)
         else
-          HubRelease::Releases.create_or_update(@head_tag, issues, reverts, @labels, @attachments)
+          HubRelease::Releases.create_or_update(@head_tag, issues, reverts, @labels, @attachments, @prerelease)
         end
       end
 
