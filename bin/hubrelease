@@ -48,6 +48,10 @@ opts = OptionParser.new do |o|
     options[:attach] << attach
   end
 
+  o.on "--prerelease", "Mark this release as a prerelease" do |prerelease|
+    options[:prerelease] = prerelease
+  end
+
   o.on_tail "-h", "--help", "Show this message" do
     puts o
     exit

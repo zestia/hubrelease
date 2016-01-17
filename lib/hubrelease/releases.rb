@@ -4,12 +4,12 @@ module HubRelease
       puts generate_body(issues, reverts, labels)
     end
 
-    def self.create_or_update(tag, issues, reverts, labels, attachments)
+    def self.create_or_update(tag, issues, reverts, labels, attachments, prerelease)
       release = HubRelease.client.release_for_tag(HubRelease.repo, tag)
       raise Octokit::NotFound if release.id.nil?
-      update(release, tag, generate_body(issues, reverts, labels), attachments)
+      update(release, tag, generate_body(issues, reverts, labels), attachments, prerelease)
     rescue Octokit::NotFound
-      create(tag, generate_body(issues, reverts, labels), attachments)
+      create(tag, generate_body(issues, reverts, labels), attachments, prerelease)
     end
 
     def self.generate_body(issues, reverts, labels)
@@ -39,11 +39,12 @@ module HubRelease
       body
     end
 
-    def self.create(tag, body, attachments)
+    def self.create(tag, body, attachments, prerelease)
       puts "Creating release #{tag}..."
       release = HubRelease.client.create_release(HubRelease.repo, tag, {
         name: tag,
         body: body,
+        prerelease: prerelease,
       })
       puts release.html_url
 
@@ -58,11 +59,12 @@ module HubRelease
       end
     end
 
-    def self.update(release, tag, body, attachments)
+    def self.update(release, tag, body, attachments, prerelease)
       puts "Updating release #{tag}..."
        HubRelease.client.update_release(release.url, {
         name: tag,
         body: body,
+        prerelease: prerelease,
       })
       puts release.html_url
 
