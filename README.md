@@ -15,14 +15,16 @@ Simple install the gem:
 
 **Arguments:**
 
-- `--repo` the repo in the format `username/project`
-- `--prev` the previous release tag name (must exist on GitHub)
-- `--reverts` include revert commits in the release notes
-- `—init` create the first release for the repo
-- `--new` the new release tag name (must exist on GitHub)
-- `--token` your GitHub API token, which you can generate in [your settings page on GitHub](https://github.com/settings/applications)
-- `--labels` a comma separated list (`--labels wontfix,question,enhancement`) to add to items
 - `--attach` a path to the asset to attach to the release
+- `--init` create the first release for the repo
+- `--labels` a comma separated list (`--labels wontfix,question,enhancement`) to add to items
+- `--new` the new release tag name (must exist on GitHub)
+- `--output` print the release notes instead of creating a release on GitHub
+- `--prerelease` mark the release as pre-release on GitHub
+- `--prev` the previous release tag name (must exist on GitHub)
+- `--repo` the repo in the format `username/project`
+- `--reverts` include revert commits in the release notes
+- `--token` your GitHub API token, which you can generate in [your settings page on GitHub](https://github.com/settings/applications)
 
 You can either generate your very first release, or create a new release from a
 previous tag and the new release.
