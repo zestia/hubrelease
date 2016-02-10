@@ -10,24 +10,38 @@ options = {}
 opts = OptionParser.new do |o|
   o.banner = "Usage: hubrelease [options]"
 
-  o.on "--repo USER/REPO", "Repository (user/repo)" do |repo|
-    options[:repo] = repo
+  o.on "--attach FILE", "File path to attach to release" do |attach|
+    options[:attach] ||= []
+    options[:attach] << attach
   end
 
   o.on "--init", "Generate first release" do |init|
     options[:init] = init
   end
 
+  o.on "--label LABEL", "Label to include on issues/pull requests labelled with the label" do |label|
+    options[:labels] ||= []
+    options[:labels] = label
+  end
+
+  o.on "--new NEW", "Next release tag name" do |new|
+    options[:new] = new
+  end
+
   o.on "--output", "Print release notes to stdout, don't create a GitHub release" do |output|
     options[:output] = output
+  end
+
+  o.on "--prerelease", "Mark this release as a prerelease" do |prerelease|
+    options[:prerelease] = prerelease
   end
 
   o.on "--prev PREVIOUS", "Previous release tag name" do |prev|
     options[:prev] = prev
   end
 
-  o.on "--new NEW", "Next release tag name" do |new|
-    options[:new] = new
+  o.on "--repo USER/REPO", "Repository (user/repo)" do |repo|
+    options[:repo] = repo
   end
 
   o.on "--reverts", "Include revert commits in the release notes" do |reverts|
@@ -36,20 +50,6 @@ opts = OptionParser.new do |o|
 
   o.on "--token TOKEN", "GitHub API token" do |token|
     options[:token] = token
-  end
-
-  o.on "--label LABEL", "Label to include on issues/pull requests labelled with the label" do |label|
-    options[:labels] ||= []
-    options[:labels] = label
-  end
-
-  o.on "--attach FILE", "File path to attach to release" do |attach|
-    options[:attach] ||= []
-    options[:attach] << attach
-  end
-
-  o.on "--prerelease", "Mark this release as a prerelease" do |prerelease|
-    options[:prerelease] = prerelease
   end
 
   o.on_tail "-h", "--help", "Show this message" do
