@@ -1,7 +1,7 @@
 module HubRelease
   module Issues
     CLOSE_REGEX = /(((close|resolve)(s|d)?)|fix(e(s|d))?) #(\d+)/i
-    MERGE_REGEX = /merge pull request #(\d+)/i
+    MERGE_REGEX = /merge pull request #(\d+)|\(#(\d+)\)/i
     REVERT_REGEX = /^Revert/i
 
     def self.fetch(since = nil)
@@ -71,6 +71,8 @@ module HubRelease
         if match = MERGE_REGEX.match(c.commit.message)
           if pr_nums.include?(match[1].to_i)
             ids << match[1].to_i
+          elsif pr_nums.include?(match[2].to_i)
+            ids << match[2].to_i
           end
         end
       end
