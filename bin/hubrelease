@@ -24,6 +24,10 @@ opts = OptionParser.new do |o|
     options[:labels] = label
   end
 
+  o.on "--master", "Use master as the next release ref, will always output release notes" do |master|
+    options[:master] = master
+  end
+
   o.on "--new NEW", "Next release tag name" do |new|
     options[:new] = new
   end
@@ -63,6 +67,8 @@ begin
 
   if options[:init]
     mandatory = [:repo, :token, :new]
+  elsif options[:master]
+    mandatory = [:repo, :token, :prev]
   else
     mandatory = [:repo, :prev, :new, :token]
   end
@@ -80,4 +86,4 @@ rescue OptionParser::InvalidOption, OptionParser::MissingArgument
   exit
 end
 
-HubRelease::Generator.generate(options)
+HubRelease::Generator.run(options)

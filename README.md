@@ -18,6 +18,7 @@ Simple install the gem:
 - `--attach` a path to the asset to attach to the release
 - `--init` create the first release for the repo
 - `--labels` a comma separated list (`--labels wontfix,question,enhancement`) to add to items
+- `--master` use `master` as the ref for the next release
 - `--new` the new release tag name (must exist on GitHub)
 - `--output` print the release notes instead of creating a release on GitHub
 - `--prerelease` mark the release as pre-release on GitHub
@@ -42,6 +43,14 @@ This will generate the very first release for a repository, you simply skip the
 `--prev` option and specify `--init` instead:
 
     hubrelease --repo zestia/hubrelease --init --new v0.0.1 --token $GITHUB_API_TOKEN
+
+### Generate With Master
+
+This will generate a new release notes between the given tag ref and `master`:
+
+    hubrelease --repo zestia/hubrelease --prev v0.1.0 --master --token $GITHUB_API_TOKEN
+
+This will always output the release note.
 
 ### Generate New Release
 
