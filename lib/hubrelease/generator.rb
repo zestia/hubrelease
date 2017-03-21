@@ -1,22 +1,30 @@
 module HubRelease
   module Generator
     class << self
-      def generate(options)
+      def run(options)
         HubRelease.client = Octokit::Client.new access_token: options[:token]
         HubRelease.repo = options[:repo]
 
         @output = options[:output]
+
         @base_tag = options[:prev]
         @head_tag = options[:new]
+
+        if options[:master]
+          @head_tag = "master"
+          @output = true
+        end
+
         @reverts = options[:reverts]
-        @prerelease = options[:prerelease] || false
-
         @labels = options[:labels] || []
-
         @attachments = options[:attach] || []
+
+        @prerelease = options[:prerelease] || false
 
         if options[:init]
           generate_first
+        elsif options[:master]
+          generate_partial
         else
           generate_new
         end
@@ -28,17 +36,17 @@ module HubRelease
         issues = HubRelease::Issues.fetch
         issues = filter_issues(issues, nil, current)
 
-        if @reverts
-          reverts = HubRelease::Issues.reverted_commits(@base_tag, @head_tag)
-        else
-          reverts = []
-        end
+        generate(issues)
+      end
 
-        if @output
-          HubRelease::Releases.output(issues, reverts, @labels)
-        else
-          HubRelease::Releases.create_or_update(@head_tag, issues, reverts, @labels, @attachments, @prerelease)
-        end
+      def generate_partial
+        since = since_date(@base_tag) - 86_400
+        current = before_date
+
+        issues = HubRelease::Issues.fetch(since)
+        issues = filter_issues(issues, since, current)
+
+        generate(issues)
       end
 
       def generate_new
@@ -48,6 +56,10 @@ module HubRelease
         issues = HubRelease::Issues.fetch(since)
         issues = filter_issues(issues, since, current)
 
+        generate(issues)
+      end
+
+      def generate(issues)
         if @reverts
           reverts = HubRelease::Issues.reverted_commits(@base_tag, @head_tag)
         else
@@ -66,8 +78,13 @@ module HubRelease
         base_ref.tagger ? base_ref.tagger.date : base_ref.author.date
       end
 
-      def before_date(tag)
-        head_ref = fetch_tag_ref(tag)
+      def before_date(tag = nil)
+        if tag.nil?
+          head_ref = fetch_master_ref
+        else
+          head_ref = fetch_tag_ref(tag)
+        end
+
         head_ref.tagger ? head_ref.tagger.date : head_ref.author.date
       end
 
@@ -75,7 +92,14 @@ module HubRelease
         ref = HubRelease.client.ref(HubRelease.repo, "tags/#{tag}")
         HubRelease.client.get(ref.object.url)
       rescue Octokit::NotFound
-        abort "Could not fetch tag reference #{tag}"
+        abort "Could not fetch tag ref #{tag}"
+      end
+
+      def fetch_master_ref
+        ref = HubRelease.client.ref(HubRelease.repo, "heads/master")
+        HubRelease.client.get(ref.object.url)
+      rescue Octokit::NotFound
+        abort "Could not fetch master ref"
       end
 
       def filter_issues(issues, since, current)
