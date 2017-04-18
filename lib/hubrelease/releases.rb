@@ -25,7 +25,7 @@ module HubRelease
             end
           end
 
-          str += " (#{labels_to_inc.join(", ")})" if labels_to_inc
+          str += " (#{labels_to_inc.join(", ")})" if labels_to_inc.size > 0
         end
 
         str
