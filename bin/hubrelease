@@ -15,6 +15,10 @@ opts = OptionParser.new do |o|
     options[:attach] << attach
   end
 
+  o.on "--branch BRANCH", "Branch to use as the next release ref, will always output release notes" do |branch|
+    options[:branch] = branch
+  end
+
   o.on "--init", "Generate first release" do |init|
     options[:init] = init
   end
@@ -67,7 +71,7 @@ begin
 
   if options[:init]
     mandatory = [:repo, :token, :new]
-  elsif options[:master]
+  elsif options[:master] || !options[:branch].nil?
     mandatory = [:repo, :token, :prev]
   else
     mandatory = [:repo, :prev, :new, :token]
