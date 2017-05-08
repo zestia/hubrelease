@@ -15,6 +15,11 @@ module HubRelease
           @output = true
         end
 
+        if !options[:branch].nil?
+          @head_tag = options[:branch]
+          @output = true
+        end
+
         @reverts = options[:reverts]
         @labels = options[:labels] || []
         @attachments = options[:attach] || []
@@ -23,7 +28,7 @@ module HubRelease
 
         if options[:init]
           generate_first
-        elsif options[:master]
+        elsif options[:master] || options[:branch]
           generate_partial
         else
           generate_new
