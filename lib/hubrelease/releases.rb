@@ -23,7 +23,7 @@ module HubRelease
             if labels.include?(l.name)
               "_#{l.name}_"
             end
-          end
+          end.compact
 
           str += " (#{labels_to_inc.join(", ")})" if labels_to_inc.size > 0
         end
