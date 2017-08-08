@@ -13,7 +13,7 @@ module HubRelease
     end
 
     def self.generate_body(issues, reverts, labels, watched)
-      return "New Release" if issues.empty? and reverts.empty?
+      return "New Release" if issues.empty? and reverts.empty? and watched.empty?
 
       body = "## Changes\n"
 
