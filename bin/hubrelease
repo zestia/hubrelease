@@ -10,7 +10,7 @@ options = {}
 opts = OptionParser.new do |o|
   o.banner = "Usage: hubrelease [options]"
 
-  o.on "--attach FILE", "File path to attach to release" do |attach|
+  o.on "--attach FILE", "File path to attach to release, can be used multiple times" do |attach|
     options[:attach] ||= []
     options[:attach] << attach
   end
@@ -58,6 +58,11 @@ opts = OptionParser.new do |o|
 
   o.on "--token TOKEN", "GitHub API token" do |token|
     options[:token] = token
+  end
+
+  o.on "--watch PATH", "Watch a file for commit changes, can be used multiple times" do |path|
+    options[:watch] ||= []
+    options[:watch] << path
   end
 
   o.on_tail "-h", "--help", "Show this message" do

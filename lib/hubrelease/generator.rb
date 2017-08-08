@@ -23,6 +23,7 @@ module HubRelease
         @reverts = options[:reverts]
         @labels = options[:labels] || []
         @attachments = options[:attach] || []
+        @watch = options[:watch] || []
 
         @prerelease = options[:prerelease] || false
 
@@ -66,15 +67,21 @@ module HubRelease
 
       def generate(issues)
         if @reverts
-          reverts = HubRelease::Issues.reverted_commits(@base_tag, @head_tag)
+          reverts = HubRelease::Commits.reverted_commits(@base_tag, @head_tag)
         else
           reverts = []
         end
 
-        if @output
-          HubRelease::Releases.output(issues, reverts, @labels)
+        if @watch
+          watched = HubRelease::Commits.watched_files_commits(@base_tag, @head_tag, @watch)
         else
-          HubRelease::Releases.create_or_update(@head_tag, issues, reverts, @labels, @attachments, @prerelease)
+          watched = []
+        end
+
+        if @output
+          HubRelease::Releases.output(issues, reverts, @labels, watched)
+        else
+          HubRelease::Releases.create_or_update(@head_tag, issues, reverts, @labels, @attachments, @prerelease, watched)
         end
       end
 
