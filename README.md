@@ -3,11 +3,9 @@
 Generate release notes from closed issues and merged pull requests, then create
 a new release on GitHub.
 
-![Release Notes Example](docs/screenshot.png)
-
 ## Installation
 
-Simple install the gem:
+Install the gem:
 
     [sudo] gem install hubrelease
 
