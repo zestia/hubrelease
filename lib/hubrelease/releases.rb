@@ -9,7 +9,7 @@ module HubRelease
       raise Octokit::NotFound if release.id.nil?
       update(release, tag, generate_body(issues, reverts, labels, watched), attachments, prerelease)
     rescue Octokit::NotFound
-      create(tag, generate_body(issues, reverts, labels), attachments, prerelease)
+      create(tag, generate_body(issues, reverts, labels, watched), attachments, prerelease)
     end
 
     def self.generate_body(issues, reverts, labels, watched)
