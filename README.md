@@ -26,6 +26,7 @@ Simple install the gem:
 - `--repo` the repo in the format `username/project`
 - `--reverts` include revert commits in the release notes
 - `--token` your GitHub API token, which you can generate in [your settings page on GitHub](https://github.com/settings/applications)
+- `--watch` a file path to watch for changes in commits
 
 You can either generate your very first release, or create a new release from a
 previous tag and the new release.
@@ -39,7 +40,7 @@ Closed issues and pull requests are included in the release notes.
 
 ### Generate First Release
 
-This will generate the very first release for a repository, you simply skip the
+This will generate the very first release for a repository, you skip the
 `--prev` option and specify `--init` instead:
 
     hubrelease --repo zestia/hubrelease --init --new v0.0.1 --token $GITHUB_API_TOKEN
