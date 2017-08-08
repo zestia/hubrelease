@@ -2,6 +2,7 @@ require "octokit"
 
 require "hubrelease/generator"
 require "hubrelease/issues"
+require "hubrelease/commits"
 require "hubrelease/releases"
 require "hubrelease/version"
 

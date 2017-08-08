@@ -81,17 +81,5 @@ module HubRelease
 
       issues.select { |i| !exclude.include?(i.number) }
     end
-
-    def self.reverted_commits(base, head)
-      @compare ||= HubRelease.client.compare(HubRelease.repo, base, head)
-
-      reverts = @compare.commits.map do |c|
-        if match = REVERT_REGEX.match(c.commit.message)
-          c.commit.message
-        end
-      end.compact.uniq
-
-      reverts
-    end
   end
 end

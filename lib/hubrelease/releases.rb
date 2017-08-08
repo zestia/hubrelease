@@ -1,21 +1,23 @@
 module HubRelease
   module Releases
-    def self.output(issues, reverts, labels)
-      puts generate_body(issues, reverts, labels)
+    def self.output(issues, reverts, labels, watched)
+      puts generate_body(issues, reverts, labels, watched)
     end
 
-    def self.create_or_update(tag, issues, reverts, labels, attachments, prerelease)
+    def self.create_or_update(tag, issues, reverts, labels, attachments, prerelease, watched)
       release = HubRelease.client.release_for_tag(HubRelease.repo, tag)
       raise Octokit::NotFound if release.id.nil?
-      update(release, tag, generate_body(issues, reverts, labels), attachments, prerelease)
+      update(release, tag, generate_body(issues, reverts, labels, watched), attachments, prerelease)
     rescue Octokit::NotFound
       create(tag, generate_body(issues, reverts, labels), attachments, prerelease)
     end
 
-    def self.generate_body(issues, reverts, labels)
-      return "New Release" if issues.empty? and reverts.empty?
+    def self.generate_body(issues, reverts, labels, watched)
+      return "New Release" if issues.empty? and reverts.empty? and watched.empty?
 
-      body = issues.map do |i|
+      body = "## Changes\n"
+
+      body += issues.map do |i|
         str = "* [##{i.number}](#{i.html_url}) - #{i.title}"
 
         unless labels.empty?
@@ -31,9 +33,16 @@ module HubRelease
         str
       end.join("\n")
 
-      body += "\n" if reverts.size > 0
+      body += "\n\n" if reverts.size > 0
       body += reverts.map do |r|
         "* #{r.split("\n")[0]}"
+      end.join("\n")
+
+      body += "\n\n## Watched File Changes\n" if watched.size > 0
+      body += watched.map do |filename, changes|
+        "* #{filename}\n" + changes.map do |c|
+          "  - #{c[:url]}: #{c[:date]}"
+        end.join("\n")
       end.join("\n")
 
       body
