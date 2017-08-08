@@ -17,8 +17,6 @@ module HubRelease
 
       changed = @compare.commits.map do |c|
         commit = HubRelease.client.commit(HubRelease.repo, c.sha)
-        require 'pp'
-        pp commit
         files = commit.files.select { |f| watched.include? f.filename }
 
         files = files.map do |f|
