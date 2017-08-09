@@ -15,25 +15,13 @@ module HubRelease
     def self.watched_files_commits(base, head, watched)
       @compare ||= HubRelease.client.compare(HubRelease.repo, base, head)
 
-      changed = @compare.commits.map do |c|
-        commit = HubRelease.client.commit(HubRelease.repo, c.sha)
-        files = commit.files.select { |f| watched.include? f.filename }
+      files = @compare.files.select { |f| watched.include? f.filename }
+      files = files.map { |f| f.filename }
 
-        files = files.map do |f|
-          {
-            filename: f.filename,
-            date: commit.commit.committer.date,
-            url: commit.html_url,
-          }
-        end
-      end.flatten
-
-      changed = changed.group_by { |c| c[:filename] }
-      changed.each do |k, v|
-        changed[k] = changed[k].sort_by { |f| f[:date] }.reverse
-      end
-
-      changed
+      {
+        files: files,
+        url: @compare.html_url
+      }
     end
   end
 end

@@ -38,11 +38,10 @@ module HubRelease
         "* #{r.split("\n")[0]}"
       end.join("\n")
 
-      body += "\n\n## Watched File Changes\n" if watched.size > 0
-      body += watched.map do |filename, changes|
-        "* #{filename}\n" + changes.map do |c|
-          "  - #{c[:url]}: #{c[:date]}"
-        end.join("\n")
+      body += "\n\n## Watched File Changes\n" if watched[:files].size > 0
+      body += "\nChanges: #{watched[:url]}\n" if watched[:files].size > 0
+      body += watched[:files].map do |file|
+        "* #{file}"
       end.join("\n")
 
       body
