@@ -55,16 +55,7 @@ module HubRelease
         prerelease: prerelease,
       })
       puts release.html_url
-
-      if attachments.size > 0
-        attachments.each do |a|
-          begin
-            HubRelease.client.upload_asset(release.url, a)
-          rescue Octokit::MissingContentType
-            HubRelease.client.upload_asset(release.url, a, :content_type => "application/octet-stream")
-          end
-        end
-      end
+      upload_attachments(release, attachments)
     end
 
     def self.update(release, tag, body, attachments, prerelease)
@@ -75,7 +66,10 @@ module HubRelease
         prerelease: prerelease,
       })
       puts release.html_url
+      upload_attachments(release, attachments)
+    end
 
+    def self.upload_attachments(release, attachments)
       if attachments.size > 0
         attachments.each do |a|
           begin
