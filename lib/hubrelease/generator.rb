@@ -26,6 +26,7 @@ module HubRelease
         @watch = options[:watch] || []
 
         @prerelease = options[:prerelease] || false
+        @draft = options[:draft] || false
 
         if options[:init]
           generate_first
@@ -81,7 +82,7 @@ module HubRelease
         if @output
           HubRelease::Releases.output(issues, reverts, @labels, watched)
         else
-          HubRelease::Releases.create_or_update(@head_tag, issues, reverts, @labels, @attachments, @prerelease, watched)
+          HubRelease::Releases.create_or_update(@head_tag, issues, reverts, @labels, @attachments, @prerelease, @draft, watched)
         end
       end
 

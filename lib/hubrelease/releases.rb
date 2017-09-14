@@ -4,12 +4,15 @@ module HubRelease
       puts generate_body(issues, reverts, labels, watched)
     end
 
-    def self.create_or_update(tag, issues, reverts, labels, attachments, prerelease, watched)
-      release = HubRelease.client.release_for_tag(HubRelease.repo, tag)
-      raise Octokit::NotFound if release.id.nil?
-      update(release, tag, generate_body(issues, reverts, labels, watched), attachments, prerelease)
+    def self.create_or_update(tag, issues, reverts, labels, attachments, prerelease, draft, watched)
+      releases = HubRelease.client.list_releases(HubRelease.repo)
+      release = releases.find { |r| r.name == tag }
+
+      raise Octokit::NotFound if release.nil?
+
+      update(release, tag, generate_body(issues, reverts, labels, watched), attachments, prerelease, draft)
     rescue Octokit::NotFound
-      create(tag, generate_body(issues, reverts, labels, watched), attachments, prerelease)
+      create(tag, generate_body(issues, reverts, labels, watched), attachments, prerelease, draft)
     end
 
     def self.generate_body(issues, reverts, labels, watched)
@@ -47,25 +50,35 @@ module HubRelease
       body
     end
 
-    def self.create(tag, body, attachments, prerelease)
+    def self.create(tag, body, attachments, prerelease, draft)
       puts "Creating release #{tag}..."
+
       release = HubRelease.client.create_release(HubRelease.repo, tag, {
         name: tag,
+        tag_name: tag,
         body: body,
         prerelease: prerelease,
+        draft: draft,
       })
+
       puts release.html_url
+
       upload_attachments(release, attachments)
     end
 
-    def self.update(release, tag, body, attachments, prerelease)
+    def self.update(release, tag, body, attachments, prerelease, draft)
       puts "Updating release #{tag}..."
+
        HubRelease.client.update_release(release.url, {
         name: tag,
+        tag_name: tag,
         body: body,
         prerelease: prerelease,
+        draft: draft,
       })
+
       puts release.html_url
+
       upload_attachments(release, attachments)
     end
 
