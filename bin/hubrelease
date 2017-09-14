@@ -19,6 +19,10 @@ opts = OptionParser.new do |o|
     options[:branch] = branch
   end
 
+  o.on "--draft", "Mark this release as a draft" do |draft|
+    options[:draft] = draft
+  end
+
   o.on "--init", "Generate first release" do |init|
     options[:init] = init
   end
