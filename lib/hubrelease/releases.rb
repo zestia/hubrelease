@@ -22,6 +22,7 @@ module HubRelease
 
       body += issues.map do |i|
         str = "* [##{i.number}](#{i.html_url}) - #{i.title}"
+        str += " (@#{i.user.login})" if i.pull_request
 
         unless labels.empty?
           labels_to_inc = i.labels.map do |l|
