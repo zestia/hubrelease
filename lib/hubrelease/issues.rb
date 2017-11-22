@@ -7,7 +7,17 @@ module HubRelease
     def self.fetch(since = nil)
       params = { state: "closed" }
       params[:since] = since.iso8601 unless since.nil?
-      HubRelease.client.issues(HubRelease.repo, params)
+
+      issues = HubRelease.client.issues(HubRelease.repo, params)
+
+      last_response = HubRelease.client.last_response
+
+      until last_response.rels[:next].nil?
+        last_response = last_response.rels[:next].get
+        issues.concat last_response.data
+      end
+
+      issues
     end
 
     def self.filter_closed_before(issues, date)
