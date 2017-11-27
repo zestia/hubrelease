@@ -1,7 +1,12 @@
 # hubrelease
 
+**DEPRECATED**: hubrelease has been deprecated in favour of
+[releasekit][releasekit]. Which is a functional rewrite using Go over Ruby.
+
 Generate release notes from closed issues and merged pull requests. Then create
 a new release, or update an existing release on GitHub.
+
+[releasekit]: https://github.com/tombell/releasekit
 
 ## Installation
 
